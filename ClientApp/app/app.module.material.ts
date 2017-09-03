@@ -35,10 +35,6 @@ import {
 } from '@angular/material';
 
 import {
-    CdkTableModule
-} from '@angular/cdk';
-
-import {
     FlexLayoutModule
 } from '@angular/flex-layout';
 
@@ -74,7 +70,6 @@ import {
         MdTableModule,
         MdPaginatorModule,
         MdSortModule,
-        CdkTableModule,
         FlexLayoutModule
     ]
 })
