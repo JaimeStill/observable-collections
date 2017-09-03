@@ -1,0 +1,14 @@
+<div class="mat-typography app-frame" fxLayout="column" [ngClass]="theme.activeTheme.value.name">
+    <md-toolbar color="primary">
+        <button md-icon-button (click)="sidepanel.toggleState()">
+            <md-icon>menu</md-icon>
+        </button>
+        <span class="toolbar-header">Observable Collections</span>
+    </md-toolbar>
+    <div class="app-body" fxFlex fxFill fxLayout="row" fxLayoutAlign="start stretch">
+        <sidepanel></sidepanel>
+        <div fxFlex class="app-panel">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

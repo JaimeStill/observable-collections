@@ -1,0 +1,16 @@
+<md-toolbar>Posts</md-toolbar>
+<p>
+    Utilize filtering and pagination on <code class="snippet">BehaviorSubject&lt;T&gt;</code> streams outside of the context of CDK Table.
+</p>
+<section fxLayout="row">
+    <md-input-container floatPlaceholder="never" fxFlex>
+        <input mdInput #filter placeholder="Filter Posts">
+    </md-input-container>
+    <md-paginator #paginator [length]="app.posts.value.length" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]"></md-paginator>
+</section>
+<div class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch">
+    <section class="post-card" *ngFor="let post of filteredData" fxFlex="32.33%">
+        <md-toolbar color="primary">{{post.title}}</md-toolbar>
+        <p>{{post.body}}</p>
+    </section>
+</div>

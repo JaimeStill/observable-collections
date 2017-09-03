@@ -1,0 +1,123 @@
+@import 'material-toaster.scss';
+
+$default-theme: mat-light-theme(mat-palette($mat-green, A400), mat-palette($mat-light-blue, A400));
+@include angular-material-theme($default-theme);
+
+html, body, app, .app-frame {
+    overflow: hidden;
+    margin: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.app-body {
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+}
+
+.app-panel {
+    overflow: auto;
+}
+
+.mat-typography h1,
+.mat-typography h2,
+.mat-typography h3,
+.mat-typography h4,
+.mat-typography h5,
+.mat-typography h6,
+.mat-typography p,
+md-card.mat-card,
+p.mat-caption,
+md-input-container,
+md-select {
+    margin-top: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+md-card.mat-card {
+    margin-bottom: 20px;
+}
+
+code.snippet,
+.app-body a.link,
+.active.active div.mat-list-item-content,
+.md-option.mat-selected.map-primary,
+.mat-primary .mat-option.mat-selected {
+    color: map-get($mat-green, A400);
+}
+
+.app-body a.link:visited {
+    color: map-get($mat-light-blue, A400);
+}
+
+$green-primary: mat-palette($mat-green, A400);
+$light-blue-accent: mat-palette($mat-light-blue, A400);
+$red-primary: mat-palette($mat-red);
+$blue-accent: mat-palette($mat-blue);
+$red-warn: mat-palette($mat-deep-orange);
+$yellow-accent: mat-palette($mat-yellow);
+
+.green-light {
+    $default-theme: mat-light-theme($green-primary, $light-blue-accent);
+    @include angular-material-theme($default-theme);
+}
+
+.green-light code.snippet,
+.green-light .app-body a.link,
+.green-light .active.active div.mat-list-item-content,
+.green-light .md-option.mat-selected.map-primary,
+.green-light .mat-primary .mat-option.mat-selected {
+    color: map-get($mat-green, A400);
+}
+
+.green-light .app-body a.link:visited {
+    color: map-get($mat-light-blue, A400);
+}
+
+.red-light {
+    $default-theme: mat-light-theme($red-primary, $blue-accent, $red-warn);
+    @include angular-material-theme($default-theme);
+}
+
+.red-light code.snippet,
+.red-light .app-body a.link,
+.red-light .active.active div.mat-list-item-content,
+.red-light .md-option.mat-selected.map-primary,
+.red-light .mat-primary .mat-option.mat-selected {
+    color: map-get($mat-red, 500);
+}
+
+.red-light .app-body a.link:visited {
+    color: map-get($mat-blue, 500);
+}
+
+.blue-light {
+    $default-theme: mat-light-theme($light-blue-accent, $yellow-accent);
+    @include angular-material-theme($default-theme);
+}
+
+.blue-light code.snippet,
+.blue-light .app-body a.link,
+.blue-light .active.active div.mat-list-item-content,
+.blue-light .md-option.mat-selected.map-primary,
+.blue-light .mat-primary .mat-option.mat-selected {
+    color: map-get($mat-light-blue, A400);
+}
+
+.blue-light .app-body a.link:visited {
+    color: map-get($mat-yellow, 500);
+}
+
+.default sidepanel md-nav-list.mat-nav-list,
+.green-light sidepanel md-nav-list.mat-nav-list,
+.red-light sidepanel md-nav-list.mat-nav-list,
+.blue-light sidepanel md-nav-list.mat-nav-list {
+    background-color: #eee;
+}
+
+div.cdk-overlay-container {
+    background-color: transparent;
+    z-index: 9999;
+}
