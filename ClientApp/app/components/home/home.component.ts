@@ -18,6 +18,7 @@ import { Post } from '../../models/post.model';
 export class HomeComponent implements OnInit {
     filterChange = new BehaviorSubject<string>('');
     filteredData: Array<Post> = new Array<Post>();
+    data: Array<Post> = new Array<Post>();
     @ViewChild(MdPaginator) paginator: MdPaginator;
     @ViewChild('filter') filter: ElementRef;
 
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
             });
 
         this.connect().subscribe(data => {
-            this.filteredData = data;
+            this.data = data;
         });
     }
 
