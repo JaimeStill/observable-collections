@@ -1,8 +1,10 @@
 <md-toolbar>Posts</md-toolbar>
 <p>
-    Utilize filtering and pagination on <code class="snippet">BehaviorSubject&lt;T&gt;</code> streams outside of the context of CDK Table.
+    Utilize filtering and pagination on <code class="snippet">BehaviorSubject&lt;T&gt;</code> streams outside of the context
+    of CDK Table.
 </p>
-<section fxLayout="row">
+<md-progress-bar color="accent" mode="indeterminate" *ngIf="app.loading | async"></md-progress-bar>
+<section fxLayout="row" fxLayout.lt-md="column">
     <md-input-container floatPlaceholder="never" fxFlex>
         <input mdInput #filter placeholder="Filter Posts">
     </md-input-container>

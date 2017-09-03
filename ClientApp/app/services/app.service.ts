@@ -12,6 +12,7 @@ import { Post } from '../models/post.model';
 
 @Injectable()
 export class AppService {
+    loading = new BehaviorSubject<boolean>(false);
     redirectUrl = new BehaviorSubject<string>('');
     themes = new BehaviorSubject<Array<Theme>>([]);
     posts = new BehaviorSubject<Array<Post>>([]);
@@ -29,6 +30,7 @@ export class AppService {
     }
 
     getPosts() {
+        this.loading.next(true);
         this.http.get('https://jsonplaceholder.typicode.com/posts')
             .map((res: Response) => {
                 return res.json().map((post: Post) => {
@@ -40,9 +42,11 @@ export class AppService {
             .subscribe(
                 (posts: Array<Post>) => {
                     this.posts.next(posts);
+                    this.loading.next(false);
                 },
                 error => {
                     this.toaster.sendErrorMessage(error);
+                    this.loading.next(false);
                 }
             );
     }
