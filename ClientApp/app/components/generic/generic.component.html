@@ -4,7 +4,7 @@
 </p>
 <search-container [service]="app">
     <md-progress-bar *ngIf="!app.posts.value.length > 0" color="accent" mode="indeterminate"></md-progress-bar>
-    <div *ngIf="app.hasDataSource | async" class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxlayout.lt-md="column">
+    <div *ngIf="app.hasDataSource | async" class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxLayout.lt-md="column">
         <section *ngFor="let post of posts | async" class="post-card" fxFlex.gt-sm="32.33%">
             <md-toolbar color="primary">{{post.title}}</md-toolbar>
             <p>{{post.body}}</p>

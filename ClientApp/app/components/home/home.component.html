@@ -10,7 +10,7 @@
     </md-input-container>
     <md-paginator #paginator [length]="filteredData.length" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]"></md-paginator>
 </section>
-<div class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxLayout.lt-md="column" fxLayoutAlign.lt-md="start stretch">
+<div class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxLayout.lt-md="column">
     <section class="post-card" *ngFor="let post of data" fxFlex.gt-sm="32.33%">
         <md-toolbar color="primary">{{post.title}}</md-toolbar>
         <p>{{post.body}}</p>
