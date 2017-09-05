@@ -11,16 +11,25 @@ import { NoCacheRequestOptions } from './services/no-cache-request-options';
 import { SidepanelService } from './services/sidepanel.service';
 import { AppService } from './services/app.service';
 
+import { PrismComponent } from './components/prism/prism.component';
+
 import { AppComponent } from './components/app/app.component';
 import { HomeComponent } from './components/home/home.component';
 import { SidepanelComponent } from './components/sidepanel/sidepanel.component';
+import { GenericComponent } from './components/generic/generic.component';
+import { SearchContainerComponent } from './components/search-container/search-container.component';
+import { WalkthroughComponent } from './components/walkthrough/walkthrough.component';
 
 export const sharedConfig: NgModule = {
     bootstrap: [ AppComponent ],
     declarations: [
+        PrismComponent,
         AppComponent,
         HomeComponent,
-        SidepanelComponent
+        SidepanelComponent,
+        GenericComponent,
+        SearchContainerComponent,
+        WalkthroughComponent
     ],
     providers: [
         ThemeService,
@@ -35,6 +44,8 @@ export const sharedConfig: NgModule = {
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
+            { path: 'generic', component: GenericComponent },
+            { path: 'walkthrough', component: WalkthroughComponent },
             { path: '**', redirectTo: 'home' }
         ])
     ]

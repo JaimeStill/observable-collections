@@ -9,15 +9,25 @@ import { ToasterService } from './toaster.service';
 import { CoreApiService } from './core-api.service';
 import { Theme } from '../models/theme.model';
 import { Post } from '../models/post.model';
+import { IService } from '../interfaces/iservice';
+import { ContainerDataSource } from '../datasources/container.datasource';
 
 @Injectable()
-export class AppService {
+export class AppService implements IService<Post> {
+    hasDataSource = new BehaviorSubject<boolean>(false);
+    dataSource = new BehaviorSubject<ContainerDataSource<Post>>(new ContainerDataSource<Post>(null, null));
     loading = new BehaviorSubject<boolean>(false);
     redirectUrl = new BehaviorSubject<string>('');
     themes = new BehaviorSubject<Array<Theme>>([]);
     posts = new BehaviorSubject<Array<Post>>([]);
+    get data(): BehaviorSubject<Array<Post>> { return this.posts }
 
     constructor(private toaster: ToasterService, private http: Http, private coreApi: CoreApiService, private router: Router) { }
+
+    setContainerSource(dataSource: ContainerDataSource<Post>) {
+        this.dataSource.next(dataSource);
+        this.hasDataSource.next(true);
+    }
 
     getThemes() {
         this.coreApi.get<Array<Theme>>('/api/app/getThemes').subscribe(

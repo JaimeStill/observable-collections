@@ -1,0 +1,234 @@
+<h2>Generic Observable Infrastructure</h2>
+<p>
+    Structure and walkthrough for enabling filtered and paginated observable collections.
+</p>
+<md-tab-group>
+    <md-tab label="Infrastructure">
+        <md-toolbar>IFilter</md-toolbar>
+        <prism class="card-snippet" language="typescript">
+export interface IFilter &#123;
+    filter: string;
+&#125;
+        </prism>
+        <md-toolbar>IService</md-toolbar>
+        <prism class="card-snippet" language="typescript">
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+import &#123; IFilter &#125; from './ifilter';
+import &#123; ContainerDataSource &#125; from '../datasources/container.datasource';
+                
+export interface IService&lt;T extends IFilter&gt; &#123;
+    data: BehaviorSubject&lt;Array&lt;T&gt;&gt;;
+    setContainerSource(dataSource: ContainerDataSource&lt;T&gt;);
+&#125;
+        </prism>
+        <md-toolbar>ContainerDataSource</md-toolbar>
+        <prism class="card-snippet" language="typescript">
+import &#123; MdPaginator &#125; from '@angular/material';
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+import &#123; Observable &#125; from 'rxjs/Observable';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/map';
+import &#123; IFilter &#125; from '../interfaces/ifilter';
+import &#123; IService &#125; from '../interfaces/iservice';
+                
+export class ContainerDataSource&lt;T extends IFilter&gt; &#123;
+    filterChange = new BehaviorSubject&lt;string&gt;('');
+    filteredData: Array&lt;T&gt; = new Array&lt;T&gt;();
+    get filter(): string &#123; return this.filterChange.value; &#125;
+    set filter(filter: string) &#123; this.filterChange.next(filter); &#125;
+                
+    constructor(private service: IService&lt;T&gt;, private paginator: MdPaginator) &#123;&#125;
+                
+    connect(): Observable&lt;T[]&gt; &#123;
+        const displayDataChanges = [
+            this.service.data,
+            this.filterChange,
+            this.paginator.page
+        ];
+                
+        return Observable.merge(...displayDataChanges).map(() =&gt; &#123;
+            this.filteredData = this.service.data.value.slice().filter((item: T) =&gt; &#123;
+                const searchStr = item.filter.toLowerCase();
+                return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
+            &#125;);
+                
+            let startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+                
+            if (startIndex &gt; this.filteredData.length) &#123;
+                startIndex = 0;
+                this.paginator.pageIndex = 0;
+            &#125;
+                
+            return this.filteredData.slice().splice(startIndex, this.paginator.pageSize);
+        &#125;);
+    &#125;
+&#125;
+        </prism>        
+        <md-toolbar>SearchContainerComponent</md-toolbar>
+        <prism language="typescript" class="card-snippet">
+import &#123; Component, ElementRef, ViewChild, OnInit, Input &#125; from '@angular/core';
+import &#123; MdPaginator &#125; from '@angular/material';
+import &#123; Observable &#125; from 'rxjs/Observable';
+import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import &#123; IService &#125; from '../../interfaces/iservice';
+import &#123; ContainerDataSource &#125; from '../../datasources/container.datasource';
+                
+@Component(&#123;
+    selector: 'search-container',
+    templateUrl: 'search-container.component.html',
+    styleUrls: ['search-container.component.css']
+&#125;)
+export class SearchContainerComponent implements OnInit &#123;
+    @Input() service: IService&lt;any&gt;
+    @ViewChild(MdPaginator) paginator: MdPaginator;
+    @ViewChild('filter') filter: ElementRef;
+    dataSource: ContainerDataSource&lt;any&gt; | null;
+                
+    ngOnInit() &#123;
+        this.dataSource = new ContainerDataSource&lt;any&gt;(this.service, this.paginator);
+        this.service.setContainerSource(this.dataSource);
+        Observable.fromEvent(this.filter.nativeElement, 'keyup')
+            .debounceTime(150)
+            .distinctUntilChanged()
+            .subscribe(() =&gt; &#123;
+                if (!this.dataSource) &#123; return; &#125;
+                this.dataSource.filter = this.filter.nativeElement.value;
+            &#125;);
+    &#125;
+&#125;
+        </prism>
+        <md-toolbar>SearchContainerComponent Template</md-toolbar>
+        <prism language="markup" class="card-snippet">
+&lt;section fxLayout="row" fxLayout.lt-md="column"&gt;
+    &lt;md-input-container floatPlaceholder="never" fxFlex&gt;
+        &lt;input mdInput #filter placeholder="Filter"&gt;
+    &lt;/md-input-container&gt;
+    &lt;md-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]"&gt;&lt;/md-paginator&gt;    
+&lt;/section&gt;
+&lt;ng-content&gt;&lt;/ng-content&gt;
+        </prism>
+    </md-tab>
+    <md-tab label="Setup">
+        <md-toolbar>Post</md-toolbar>
+        <prism language="typescript" class="card-snippet">
+import &#123; IFilter &#125; from '../interfaces/ifilter';
+                
+export class Post implements IFilter &#123;
+    title: string;
+    body: string;
+                
+    get filter(): string &#123; return this.title &#125;
+&#125;
+        </prism>
+        <md-toolbar>AppService</md-toolbar>
+        <prism language="typescript" class="card-snippet">
+import &#123; Injectable &#125; from '@angular/core';
+import &#123; Http, Response &#125; from '@angular/http';
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+import &#123; ToasterService &#125; from './toaster.service';
+import &#123; CoreApiService &#125; from './core-api.service';
+import &#123; Post &#125; from '../models/post.model';
+import &#123; IService &#125; from '../interfaces/iservice';
+import &#123; ContainerDataSource &#125; from '../datasources/container.datasource';
+                
+@Injectable()
+export class AppService implements IService&lt;Post&gt; &#123;
+    hasDataSource = new BehaviorSubject&lt;boolean&gt;(false);
+    dataSource = new BehaviorSubject&lt;ContainerDataSource&lt;Post&gt;&gt;(new ContainerDataSource&lt;Post&gt;(null, null));
+    posts = new BehaviorSubject&lt;Array&lt;Post&gt;&gt;([]);
+    get data(): BehaviorSubject&lt;Array&lt;Post&gt;&gt; &#123; return this.posts &#125;
+                
+    constructor(private toaster: ToasterService, private http: Http, private coreApi: CoreApiService) &#123; &#125;
+                
+    setContainerSource(dataSource: ContainerDataSource&lt;Post&gt;) &#123;
+        this.dataSource.next(dataSource);
+        this.hasDataSource.next(true);
+    &#125;
+                
+    getPosts() &#123;
+        this.loading.next(true);
+        this.http.get('https://jsonplaceholder.typicode.com/posts')
+            .map((res: Response) =&gt; &#123;
+                return res.json().map((post: Post) =&gt; &#123;
+                    post.title = post.title.split(' ').slice(0, 3).toString().replace(',', ' ').replace(',', ' ');
+                    return Object.assign(new Post(), post);
+                &#125;);
+            &#125;)
+            .catch(this.coreApi.handleError)
+            .subscribe(
+                (posts: Array&lt;Post&gt;) =&gt; &#123;
+                    this.posts.next(posts);
+                    this.loading.next(false);
+                &#125;,
+                error =&gt; &#123;
+                    this.toaster.sendErrorMessage(error);
+                    this.loading.next(false);
+                &#125;
+            );
+    &#125;
+&#125;
+        </prism>
+        <md-toolbar>GenericComponent</md-toolbar>
+        <prism language="typescript" class="card-snippet">
+import &#123; Component, OnInit &#125; from '@angular/core';
+import &#123; AppService &#125; from '../../services/app.service';
+import &#123; Post &#125; from '../../models/post.model';
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+                
+@Component(&#123;
+    selector: 'generic',
+    templateUrl: 'generic.component.html',
+    styleUrls: ['generic.component.css']
+&#125;)
+export class GenericComponent implements OnInit &#123;
+    posts = new BehaviorSubject&lt;Array&lt;Post&gt;&gt;([]);
+                
+    constructor(private app: AppService) &#123;
+        app.getPosts();
+    &#125;
+                
+    ngOnInit() &#123;
+        this.app.hasDataSource.subscribe(bool =&gt; &#123;
+            if (bool) &#123;
+                this.app.dataSource.subscribe(source =&gt; &#123;
+                    source.connect().subscribe(data =&gt; &#123;
+                        this.posts.next(data);
+                    &#125;);
+                &#125;);
+            &#125;
+        &#125;);
+    &#125;
+&#125;
+        </prism>
+        <md-toolbar>GenericComponent Template</md-toolbar>
+        <prism language="markup" class="card-snippet">
+&lt;search-container [service]="app"&gt;
+    &lt;md-progress-bar *ngIf="!app.posts.value.length &gt; 0" color="accent" mode="indeterminate"&gt;&lt;/md-progress-bar&gt;
+    &lt;div *ngIf="app.hasDataSource | async" class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxlayout.lt-md="column"&gt;
+        &lt;section *ngFor="let post of posts | async" class="post-card" fxFlex.gt-sm="32.33%"&gt;
+            &lt;md-toolbar color="primary"&gt;{{'{'}}{{'{'}}post.title{{'}'}}{{'}'}}&lt;/md-toolbar&gt;
+            &lt;p&gt;{{'{'}}{{'{'}}post.body{{'}'}}{{'}'}}&lt;/p&gt;
+        &lt;/section&gt;
+    &lt;/div&gt;
+&lt;/search-container&gt;
+        </prism>
+    </md-tab>
+    <md-tab label="Demo">
+        <search-container [service]="app">
+            <md-progress-bar *ngIf="!app.posts.value.length > 0" color="accent" mode="indeterminate"></md-progress-bar>
+            <div *ngIf="app.hasDataSource | async" class="post-container" fxLayout="row | wrap" fxLayoutAlign="start stretch" fxLayout.lt-md="column">
+                <md-card class="post-card" *ngFor="let post of posts | async" fxFlex.gt-sm="31%" 
+                         [class.mat-elevation-z8]="post.isRaised" (mouseenter)="setIsRaised(post)" (mouseleave)="removeIsRaised(post)">
+                    <md-card-title>{{post.title}}</md-card-title>
+                    <md-card-content>
+                        <p>{{post.body}}</p>
+                    </md-card-content>
+                </md-card>
+            </div>
+        </search-container>
+    </md-tab>
+</md-tab-group>

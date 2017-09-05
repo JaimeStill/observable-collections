@@ -1,0 +1,9 @@
+.post-card {
+    margin: 1%;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.post-card:hover {
+    box-shadow: 8dp;
+}

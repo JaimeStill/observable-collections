@@ -1,0 +1,7 @@
+<section fxLayout="row" fxLayout.lt-md="column">
+    <md-input-container floatPlaceholder="never" fxFlex>
+        <input mdInput #filter placeholder="Filter">
+    </md-input-container>
+    <md-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]"></md-paginator>    
+</section>
+<ng-content></ng-content>
