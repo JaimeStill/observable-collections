@@ -12,6 +12,7 @@ import { SidepanelService } from './services/sidepanel.service';
 import { AppService } from './services/app.service';
 
 import { PrismComponent } from './components/prism/prism.component';
+import { GithubCodeComponent } from './components/github-code/github-code.component';
 
 import { AppComponent } from './components/app/app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -29,7 +30,8 @@ export const sharedConfig: NgModule = {
         SidepanelComponent,
         GenericComponent,
         SearchContainerComponent,
-        WalkthroughComponent
+        WalkthroughComponent,
+        GithubCodeComponent
     ],
     providers: [
         ThemeService,

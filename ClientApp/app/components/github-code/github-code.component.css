@@ -1,0 +1,13 @@
+.code {
+    background-color: #1E1E1E;
+    display: flex;
+    color: #D4D4D4;
+    box-sizing: border;
+    padding: 24px;
+    margin: 0;
+}
+
+pre,
+pre code {
+    background-color: #1E1E1E;
+}

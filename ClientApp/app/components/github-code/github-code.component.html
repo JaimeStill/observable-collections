@@ -1,0 +1,4 @@
+<md-progress-bar color="accent" mode="indeterminate" *ngIf="!source"></md-progress-bar>
+<section class="code" *ngIf="source">
+    <pre><code [innerHtml]="source" class="block block-{{language}}"></code></pre>
+</section>

@@ -1,6 +1,7 @@
 import {
     Component,
     AfterViewInit,
+    OnChanges,
     Input,
     ElementRef,
     ViewChild,
@@ -18,7 +19,7 @@ declare var Prism: any;
     <pre><code [innerHtml]="content" class="block language-{{language}}"></code></pre>
     `
 })
-export class PrismComponent implements AfterViewInit {
+export class PrismComponent implements AfterViewInit, OnChanges {
     @Input() language: string;
     @ViewChild('rawContent') rawContent: ElementRef;
     content = '';
@@ -26,6 +27,11 @@ export class PrismComponent implements AfterViewInit {
     constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) {}
 
     ngAfterViewInit() {
+        this.content = Prism.highlight(this.rawContent.nativeElement.textContent.trim(), Prism.languages[this.language]);
+        this.cdr.detectChanges();
+    }
+
+    ngOnChanges(event) {
         this.content = Prism.highlight(this.rawContent.nativeElement.textContent.trim(), Prism.languages[this.language]);
         this.cdr.detectChanges();
     }
